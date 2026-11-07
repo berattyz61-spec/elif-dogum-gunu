@@ -26,24 +26,23 @@
             overflow-y: hidden;
         }
 
-        /* Müzik Çalar (YouTube Destekli) */
+        /* Müzik Çalar (Spotify tarzı mini ekran) */
         #music-player {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(250, 218, 221, 0.12);
-            border: 1px solid rgba(250, 218, 221, 0.35);
-            padding: 10px 16px 15px 12px;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            width: 340px;
+            padding: 12px 14px 12px 12px;
+            border-radius: 16px;
+            background: rgba(35, 0, 12, 0.78);
+            border: 1px solid rgba(250, 218, 221, 0.22);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.4);
             z-index: 100;
-            font-size: 0.9rem;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             opacity: 0;
             transform: translateY(-14px) scale(0.96);
             transition: opacity 1s, transform 1s cubic-bezier(.2, .8, .2, 1), box-shadow 0.6s;
@@ -58,74 +57,97 @@
 
         /* Şarkı değişince kısa bir parlama */
         #music-player.changing {
-            box-shadow: 0 0 0 1px rgba(250, 218, 221, 0.5), 0 0 28px rgba(250, 218, 221, 0.35);
+            box-shadow: 0 0 0 1px rgba(250, 218, 221, 0.5), 0 0 30px rgba(250, 218, 221, 0.35);
         }
 
-        /* Dönen plak */
-        .disc-wrap {
-            width: 38px;
-            height: 38px;
-            flex-shrink: 0;
+        .mp-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .disc-wrap.pop {
-            animation: discPop 0.8s cubic-bezier(.3, 1.4, .5, 1);
-        }
-
-        @keyframes discPop {
-            0%   { transform: scale(1) rotate(0deg); }
-            40%  { transform: scale(0.65) rotate(-140deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        .disc {
+        /* Albüm kapağı (YouTube küçük resmi) */
+        .cover {
             position: relative;
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #91002f, #3a0013);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--pembe);
+        }
+
+        .cover img {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
-            border-radius: 50%;
-            background: radial-gradient(circle at center,
-                var(--pembe) 0 14%, #2a000d 15% 17%, #1a0008 18% 40%,
-                #33000f 41% 43%, #1a0008 44% 70%, #2a000d 71% 100%);
-            border: 1px solid rgba(250, 218, 221, 0.35);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-            animation: spin 5s linear infinite;
+            object-fit: cover;
+        }
+
+        .cover.pop {
+            animation: coverPop 0.7s cubic-bezier(.3, 1.4, .5, 1);
+        }
+
+        @keyframes coverPop {
+            0%   { transform: scale(0.8) rotate(-6deg); opacity: 0.4; }
+            100% { transform: none; opacity: 1; }
+        }
+
+        /* Ekolayzer (çalarken kapağın altında görünür) */
+        .eq {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 26px;
+            padding: 0 0 4px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .eq i {
+            display: block;
+            width: 3px;
+            height: 100%;
+            background: var(--pembe);
+            border-radius: 2px;
+            transform-origin: bottom;
+            transform: scaleY(0.25);
+            animation: eq 1s ease-in-out infinite;
             animation-play-state: paused;
         }
 
-        .disc::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: conic-gradient(transparent 0 20%, rgba(250, 218, 221, 0.2) 25%, transparent 30% 70%, rgba(250, 218, 221, 0.2) 75%, transparent 80%);
-        }
+        .eq i:nth-child(2) { animation-duration: 0.8s; animation-delay: -0.4s; }
+        .eq i:nth-child(3) { animation-duration: 1.1s; animation-delay: -0.2s; }
+        .eq i:nth-child(4) { animation-duration: 0.9s; animation-delay: -0.7s; }
 
-        .disc::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 6px;
-            height: 6px;
-            margin: -3px 0 0 -3px;
-            border-radius: 50%;
-            background: var(--bordo);
-        }
+        #music-player.playing .eq { opacity: 1; }
+        #music-player.playing .eq i { animation-play-state: running; }
 
-        #music-player.playing .disc {
-            animation-play-state: running;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes eq {
+            0%, 100% { transform: scaleY(0.2); }
+            50%      { transform: scaleY(1); }
         }
 
         /* Şarkı adı */
         .track-info {
-            width: 150px;
+            flex: 1;
             min-width: 0;
             text-align: left;
-            line-height: 1.25;
+            line-height: 1.3;
         }
 
         .track-info.swap {
@@ -137,16 +159,6 @@
             to   { opacity: 1; transform: none; filter: blur(0); }
         }
 
-        .track-artist {
-            font-size: 0.68rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            opacity: 0.65;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
         .track-title-wrap {
             overflow: hidden;
             white-space: nowrap;
@@ -154,10 +166,9 @@
 
         .track-title {
             display: inline-block;
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            font-size: 1rem;
+            font-size: 0.92rem;
             font-weight: 500;
+            color: #fff;
         }
 
         /* Uzun şarkı adları sağa sola kayar */
@@ -170,53 +181,28 @@
             85%, 100% { transform: translateX(var(--shift, 0px)); }
         }
 
-        /* Ekolayzer */
-        .eq {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 18px;
-        }
-
-        .eq i {
-            display: block;
-            width: 3px;
-            height: 100%;
-            background: var(--pembe);
-            border-radius: 2px;
-            opacity: 0.85;
-            transform-origin: bottom;
-            transform: scaleY(0.25);
-            animation: eq 1s ease-in-out infinite;
-            animation-play-state: paused;
-        }
-
-        .eq i:nth-child(2) { animation-duration: 0.8s; animation-delay: -0.4s; }
-        .eq i:nth-child(3) { animation-duration: 1.1s; animation-delay: -0.2s; }
-        .eq i:nth-child(4) { animation-duration: 0.9s; animation-delay: -0.7s; }
-
-        #music-player.playing .eq i {
-            animation-play-state: running;
-        }
-
-        @keyframes eq {
-            0%, 100% { transform: scaleY(0.2); }
-            50%      { transform: scaleY(1); }
+        .track-artist {
+            font-size: 0.74rem;
+            opacity: 0.65;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Butonlar */
         .controls {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
+            flex-shrink: 0;
         }
 
         .music-btn {
             background: none;
             border: none;
             color: var(--pembe);
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -261,26 +247,84 @@
         #music-player.playing .music-btn .icon-play { display: none; }
         #music-player.playing .music-btn .icon-pause { display: block; }
 
-        /* İlerleme çubuğu */
-        .progress {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 5px;
-            background: rgba(250, 218, 221, 0.12);
-            cursor: pointer;
+        /* Süre çubuğu (sürükleyerek şarkıda ileri geri gidilir) */
+        .mp-seek {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, rgba(250, 218, 221, 0.5), var(--pembe));
-            transition: width 0.5s linear;
+        .time {
+            font-size: 0.68rem;
+            opacity: 0.7;
+            min-width: 30px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .time.total {
+            text-align: right;
+        }
+
+        .seek {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            min-width: 0;
+            height: 22px;
+            margin: 0;
+            background: transparent;
+            cursor: pointer;
+            --p: 0%;
+        }
+
+        .seek:focus {
+            outline: none;
+        }
+
+        .seek::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(to right, var(--pembe) var(--p), rgba(250, 218, 221, 0.25) var(--p));
+        }
+
+        .seek::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            margin-top: -4px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+            transition: transform 0.15s;
+        }
+
+        .seek:active::-webkit-slider-thumb {
+            transform: scale(1.3);
+        }
+
+        .seek::-moz-range-track {
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(250, 218, 221, 0.25);
+        }
+
+        .seek::-moz-range-progress {
+            height: 4px;
+            border-radius: 2px;
+            background: var(--pembe);
+        }
+
+        .seek::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .disc, .eq i, .track-title.scroll { animation: none; }
+            .eq i, .track-title.scroll { animation: none; }
         }
 
         /* Ekranlar */
@@ -527,11 +571,9 @@
             .container::after { left: 21px; }
             .left::after, .right::after { left: 21px; }
             .right { left: 0%; }
-            #music-player { top: 10px; right: 10px; padding: 8px 12px 13px 10px; gap: 8px; font-size: 0.8rem; }
-            .disc-wrap { width: 32px; height: 32px; }
-            .track-info { width: 105px; }
-            .track-title { font-size: 0.9rem; }
-            .eq { display: none; }
+            #music-player { top: 10px; right: 10px; width: min(300px, calc(100vw - 20px)); padding: 10px 12px 8px 10px; }
+            .cover { width: 46px; height: 46px; }
+            .track-title { font-size: 0.85rem; }
             .music-btn { width: 28px; height: 28px; }
             .music-btn.main { width: 34px; height: 34px; }
             #final-title { font-size: 2.2rem; }
@@ -549,25 +591,34 @@
 
     <!-- Müzik Çalar -->
     <div id="music-player">
-        <div class="disc-wrap" id="disc-wrap"><div class="disc"></div></div>
-        <div class="track-info" id="track-info">
-            <div class="track-artist" id="song-artist"></div>
-            <div class="track-title-wrap"><span class="track-title" id="song-name">Müzik Yükleniyor...</span></div>
+        <div class="mp-top">
+            <div class="cover" id="cover">
+                ♪
+                <img id="cover-img" alt="">
+                <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            </div>
+            <div class="track-info" id="track-info">
+                <div class="track-title-wrap"><span class="track-title" id="song-name">Müzik Yükleniyor...</span></div>
+                <div class="track-artist" id="song-artist"></div>
+            </div>
+            <div class="controls">
+                <button class="music-btn" onclick="prevSong()" aria-label="Önceki şarkı">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                </button>
+                <button class="music-btn main" id="play-btn" onclick="togglePlay()" aria-label="Oynat / Durdur">
+                    <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+                </button>
+                <button class="music-btn" onclick="nextSong()" aria-label="Sonraki şarkı">
+                    <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </button>
+            </div>
         </div>
-        <div class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-        <div class="controls">
-            <button class="music-btn" onclick="prevSong()" aria-label="Önceki şarkı">
-                <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-            </button>
-            <button class="music-btn main" id="play-btn" onclick="togglePlay()" aria-label="Oynat / Durdur">
-                <svg class="icon-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                <svg class="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
-            </button>
-            <button class="music-btn" onclick="nextSong()" aria-label="Sonraki şarkı">
-                <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
-            </button>
+        <div class="mp-seek">
+            <span class="time" id="time-current">0:00</span>
+            <input type="range" class="seek" id="seek" min="0" max="1000" value="0" step="1" aria-label="Şarkı süresi">
+            <span class="time total" id="time-total">0:00</span>
         </div>
-        <div class="progress" id="progress" onclick="seekFromBar(event)"><div class="progress-bar" id="progress-bar"></div></div>
     </div>
 
     <!-- 1. Ekran -->
@@ -602,17 +653,13 @@
     <script>
         // --- YOUTUBE MÜZİK SİSTEMİ ---
 
-        // Her şarkı: id = YouTube linkindeki 'v=' kodu, alt = ana video açılmazsa denenecek yedek kod.
-        // Şarkı eklemek / çıkarmak için bu listeyi düzenlemen yeterli.
+        // Şarkı listen güncellendi! Aşkın Ertesi ilk sıraya alındı, istediklerin eklendi.
         const youtubeVideos = [
+            { id: 'V8vIYP7G-zQ', alt: 'udiS3lB9wSE', title: 'Bahadır Tatlıöz - Aşkın Ertesi' },
             { id: 'mGr_5vbL80Y', alt: 'JQhVutggvvE', title: 'Duman - Her Şeyi Yak' },
-            { id: 'UmP-XGBqess', alt: 'DvGTCoPp-fY', title: 'Majeste - Aşk Dediğin' },
             { id: 'VnG09qT6xKU', alt: 'AyPfRMUqeLo', title: 'Yüksek Sadakat - Kafile' },
-            { id: 'yoNzzWRye7c', alt: '67Vf4H5pDfM', title: 'Duman - Seni Kendime Sakladım' },
-            { id: 'SdmaCTEhcoU', alt: 'jFwc0Vez2ck', title: 'Duman - Elleri Ellerime' },
-            { id: '72nGwgu3JDg', alt: 'heUSEDLf4ic', title: 'Yüksek Sadakat - Belki Üstümüzden Bir Kuş Geçer' },
-            { id: 'M-rZ3602Lm8', alt: 'Y5XwoJRSpjQ', title: 'maNga - Bir Kadın Çizeceksin' },
-            { id: 'bOGTg4msji0', alt: 'JJTSYzpGFdg', title: 'Duman - Bu Akşam' }
+            { id: 'OuUrfKk_eSc', alt: '3YL4Btzcf2Q', title: 'Ogün Sanlısoy - Saydım (Akustik 2012)' },
+            { id: 'i8Od1PuJelc', alt: '_Qn_5kk0N40', title: 'Deniz Toprak - Diz Dize' }
         ];
 
         let player;
@@ -621,6 +668,11 @@
         let userWantsPlay = false;   // Müziği kullanıcı başlattı mı?
         let usingAlt = false;        // Yedek video mu çalıyor?
         let failedInARow = 0;
+        let isSeeking = false;       // Süre çubuğu sürüklenirken true
+
+        const seekEl = document.getElementById('seek');
+        const coverImg = document.getElementById('cover-img');
+        coverImg.onerror = function () { this.style.display = 'none'; }; // Kapak yüklenmezse ♪ görünür
 
         function currentVideoId() {
             const song = youtubeVideos[currentSongIndex];
@@ -632,9 +684,21 @@
             document.getElementById('music-player').classList.toggle('playing', state);
         }
 
-        // Şarkı adını ekrana yazar, istenirse geçiş animasyonlarını çalıştırır
+        function formatTime(seconds) {
+            const s = Math.max(0, Math.floor(seconds || 0));
+            const r = s % 60;
+            return Math.floor(s / 60) + ':' + (r < 10 ? '0' : '') + r;
+        }
+
+        function setSeekUI(ratio) {
+            seekEl.value = Math.round(ratio * 1000);
+            seekEl.style.setProperty('--p', (ratio * 100) + '%');
+        }
+
+        // Şarkı adını ve kapağı ekrana yazar, istenirse geçiş animasyonlarını çalıştırır
         function showSongInfo(animate) {
-            const full = youtubeVideos[currentSongIndex].title;
+            const song = youtubeVideos[currentSongIndex];
+            const full = song.title;
             const sep = full.indexOf(' - ');
             const artist = sep > -1 ? full.slice(0, sep) : '';
             const title = sep > -1 ? full.slice(sep + 3) : full;
@@ -646,15 +710,18 @@
             titleEl.classList.remove('scroll');
             titleEl.style.removeProperty('--shift');
 
+            coverImg.style.display = 'block';
+            coverImg.src = 'https://i.ytimg.com/vi/' + song.id + '/mqdefault.jpg';
+
             if (animate) {
                 info.classList.remove('swap');
                 void info.offsetWidth; // animasyonu baştan başlat
                 info.classList.add('swap');
 
-                const disc = document.getElementById('disc-wrap');
-                disc.classList.remove('pop');
-                void disc.offsetWidth;
-                disc.classList.add('pop');
+                const cover = document.getElementById('cover');
+                cover.classList.remove('pop');
+                void cover.offsetWidth;
+                cover.classList.add('pop');
 
                 const box = document.getElementById('music-player');
                 box.classList.add('changing');
@@ -675,29 +742,39 @@
         }
 
         function resetProgress() {
-            const bar = document.getElementById('progress-bar');
-            bar.style.transition = 'none';
-            bar.style.width = '0%';
-            void bar.offsetWidth;
-            bar.style.transition = '';
+            setSeekUI(0);
+            document.getElementById('time-current').innerText = '0:00';
+            document.getElementById('time-total').innerText = '0:00';
         }
 
         function updateProgress() {
             if (!player || typeof player.getDuration !== 'function') return;
-            const duration = player.getDuration();
-            if (!duration) return;
-            const percent = Math.min(100, (player.getCurrentTime() / duration) * 100);
-            document.getElementById('progress-bar').style.width = percent + '%';
+            const duration = player.getDuration() || 0;
+            const current = player.getCurrentTime() || 0;
+            document.getElementById('time-total').innerText = formatTime(duration);
+            if (isSeeking) return; // Sürüklerken çubuğu elle oynatma
+            setSeekUI(duration ? Math.min(1, current / duration) : 0);
+            document.getElementById('time-current').innerText = formatTime(current);
         }
 
-        // Çubuğa tıklayınca şarkıda o noktaya atla
-        function seekFromBar(event) {
-            if (!player || typeof player.seekTo !== 'function') return;
-            const rect = document.getElementById('progress').getBoundingClientRect();
-            const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-            const duration = player.getDuration();
-            if (duration) player.seekTo(duration * ratio, true);
-        }
+        // Çubuğu sürüklerken süreyi canlı göster
+        seekEl.addEventListener('input', () => {
+            isSeeking = true;
+            const duration = (player && typeof player.getDuration === 'function') ? player.getDuration() : 0;
+            const ratio = seekEl.value / 1000;
+            seekEl.style.setProperty('--p', (ratio * 100) + '%');
+            document.getElementById('time-current').innerText = formatTime(duration * ratio);
+        });
+
+        // Bırakınca şarkıda o noktaya atla
+        seekEl.addEventListener('change', () => {
+            if (player && typeof player.seekTo === 'function') {
+                const duration = player.getDuration();
+                if (duration) player.seekTo(duration * (seekEl.value / 1000), true);
+            }
+            isSeeking = false;
+        });
+        seekEl.addEventListener('pointercancel', () => { isSeeking = false; });
 
         function loadSong(index, play, useAlt) {
             currentSongIndex = (index + youtubeVideos.length) % youtubeVideos.length;
@@ -729,9 +806,13 @@
         }
 
         function onPlayerReady(event) {
-            showSongInfo(false);
-            setInterval(updateProgress, 500);
-            if (userWantsPlay) player.playVideo(); // Kullanıcı oynatıcı hazır olmadan dokunduysa şimdi başlat
+            setInterval(updateProgress, 250);
+            if (userWantsPlay) {
+                player.loadVideoById(currentVideoId()); // Kullanıcı oynatıcı hazır olmadan dokunduysa şimdi başlat
+            } else {
+                const data = player.getVideoData ? player.getVideoData() : null;
+                if (data && data.video_id !== currentVideoId()) player.cueVideoById(currentVideoId());
+            }
         }
 
         function onPlayerStateChange(event) {
@@ -786,6 +867,9 @@
             loadSong(currentSongIndex - 1, true);
         }
 
+        // Sayfa açılınca ilk şarkının adı ve kapağı hazır olsun
+        showSongInfo(false);
+
 
         // --- YAVAŞ YAZMA (TYPEWRITER) EFEKTİ ---
         function typeWriter(element, text, speed = 35) {
@@ -821,6 +905,7 @@
                 nextScreen.classList.add('active');
                 if(currentScreenNumber + 1 === 3) {
                     document.body.style.overflowY = "auto";
+                    // Müzik çaları 3. ekranda görünür yap
                     document.getElementById('music-player').classList.add('visible');
                 }
             }, 1000);
